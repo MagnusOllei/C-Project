@@ -1,0 +1,94 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+// Class to represent each hole
+class Hole {
+public:
+    int holeNumber;
+    int par;  // Standard number of throws for the hole
+    int difficulty;  // Difficulty of the hole (1-10)
+    string description;  // Description of the hole (Rocky Mountains theme)
+
+    Hole(int number, int parValue, int difficultyLevel, string holeDescription)
+        : holeNumber(number), par(parValue), difficulty(difficultyLevel), description(holeDescription) {}
+
+    void displayHoleInfo() {
+        cout << "Hole " << holeNumber << ": " << description << endl;
+        cout << "Par: " << par << " | Difficulty: " << difficulty << "/10" << endl;
+    }
+};
+
+// Class to represent the player
+class Player {
+public:
+    string name;
+    int totalThrows;
+    vector<int> scores;  // Scores for each hole
+
+    Player(string playerName) : name(playerName), totalThrows(0) {}
+
+    void addScore(int score) {
+        scores.push_back(score);
+        totalThrows += score;
+    }
+
+    void displayScorecard() {
+        cout << "Scorecard for " << name << ":\n";
+        for (int i = 0; i < scores.size(); ++i) {
+            cout << "Hole " << (i + 1) << ": " << scores[i] << " throws (Par " << (scores[i] - 3) << ")\n";
+        }
+        cout << "Total Throws: " << totalThrows << endl;
+    }
+};
+
+int main() {
+    string playerName;
+
+    // Get player's name
+    cout << "Welcome to Disc Golf through the Rocky Mountains!" << endl;
+    cout << "Enter your name: ";
+    getline(cin, playerName);
+
+    Player player(playerName);
+
+    // Define the holes (18 holes, different difficulties and par values)
+    vector<Hole> holes = {
+        Hole(1, 3, 5, "A scenic hole with a view of a valley."),
+        Hole(2, 4, 6, "Tough uphill shot, with a stream crossing."),
+        Hole(3, 3, 7, "A short hole but with a lot of trees."),
+        Hole(4, 5, 8, "A long hole across a ridge with strong winds."),
+        Hole(5, 3, 4, "A narrow fairway with a steep drop on one side."),
+        Hole(6, 4, 6, "A hole that requires precision, surrounded by rocks."),
+        Hole(7, 3, 5, "A downhill hole with varying elevation."),
+        Hole(8, 4, 7, "A hole with a tricky uphill angle."),
+        Hole(9, 5, 8, "Wide open but the wind can be treacherous."),
+        Hole(10, 3, 6, "A hole with a sharp dogleg left."),
+        Hole(11, 4, 7, "A deep canyon that requires a precise throw."),
+        Hole(12, 3, 5, "A hole through a rocky pass."),
+        Hole(13, 4, 6, "An open hole but with a strong breeze."),
+        Hole(14, 3, 7, "A hole that dips into a forest and is hard to navigate."),
+        Hole(15, 5, 6, "Long hole with a steep incline."),
+        Hole(16, 4, 5, "A challenging hole with many trees."),
+        Hole(17, 3, 7, "A short hole with a rocky obstacle in the middle."),
+        Hole(18, 5, 9, "The final hole, requiring a strong, accurate shot over a ravine.")
+    };
+
+    // Main game loop for 18 holes
+    for (int i = 0; i < 18; ++i) {
+        cout << "\n\n";
+        holes[i].displayHoleInfo();  // Display hole info
+        int playerThrows;
+        cout << "Enter your throws for this hole: ";
+        cin >> playerThrows;
+        player.addScore(playerThrows);  // Add score to player
+    }
+
+    // Display final scorecard
+    cout << "\nGame Over! Here's your final scorecard:\n";
+    player.displayScorecard();
+
+    return 0;
+}
