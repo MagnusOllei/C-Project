@@ -241,8 +241,8 @@ void getValidInput(char &direction, int &force) {
 
 // **Main Game Loop**
 int main() {
-    cout << "Welcome to Mini Golf! Get the ball into the hole (X).\n";
-    cout << "Use 'u' (up), 'd' (down), 'l' (left), 'r' (right) to move.\n";
+    cout << "Welcome to Console Mini Golf! Get the ball (o) into the hole (X).\n";
+    cout << "Use 'u' (up), 'd' (down), 'l' (left), 'r' (right) to move. Enter a force 1-10 to determine how far the ball travels.\n";
 
     for (int i = 0; i < NUM_HOLES; i++) {
         Ball ball = ballPositions[i];
@@ -251,41 +251,20 @@ int main() {
 
         // Hole 1 message (no obstacles or portals)
         if (i == 0) {
-            cout << "\nHole 1: Just get the ball into the hole. No obstacles or portals.\n";
+            cout << "\nGet the ball into the hole.\n";
         }
         // Hole 2 message (introduce obstacles)
         if (i == 1) {
-            cout << "\nHole 2: Avoid obstacles on the course to get to the hole.\n";
+            cout << "\nAvoid obstacles (#) on the course to get to the hole.\n";
         }
         // Hole 3 message (introduce portals)
         if (i == 2) {
-            cout << "\nHole 3: Portals are now active. Avoid obstacles and use portals when needed to get to the hole.\n";
+            cout << "\nPortals (&) are now active. Use portals to avoid obstacles on the way to the hole.\n";
         }
         // Hole 4 message (introduce more obstacles and portals)
         if (i == 3) {
-            cout << "\nHole 4: Obstacles are now blocking your path. You need to use the portal to cross the barrier.\n";
+            cout << "\nAll elements (obstacles, portals) are now active! Good luck!\n";
         }
-        // Hole 5 message (introduce more obstacles and portals)
-        if (i == 4) {
-            cout << "\nHole 5: Use portals to cross over obstacles and reach the hole.\n";
-        }
-        // Hole 6 message (introduce more obstacles)
-        if (i == 5) {
-            cout << "\nHole 6: Beware of obstacles that are scattered across the course.\n";
-        }
-        // Hole 7 message (more obstacles and portals)
-        if (i == 6) {
-            cout << "\nHole 7: The course is full of obstacles. Portals are your only way to bypass them.\n";
-        }
-        // Hole 8 message (introduce challenges and portals)
-        if (i == 7) {
-            cout << "\nHole 8: Obstacles and portals are both in your way! You must plan carefully to reach the hole.\n";
-        }
-        // Hole 9 message (final challenge)
-        if (i == 8) {
-            cout << "\nHole 9: The ultimate challenge! Obstacles and portals are everywhere. Can you make it?\n";
-        }
-
         // Game loop to move ball
         while (ball.x != holes[i].x || ball.y != holes[i].y) {
             char direction;
