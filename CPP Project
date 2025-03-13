@@ -10,7 +10,6 @@ const char PATH = '-';
 const char OBSTACLE = '#';
 const char BALL = 'o';
 const char HOLE = 'X';
-const char PORTAL = '&';
 
 struct Ball {
     int x, y;
@@ -21,146 +20,117 @@ struct Hole {
     int par = 4;
 };
 
-struct Portal {
-    int x1, y1, x2, y2;
-    bool active;
+// Predefined Ball Positions
+Ball ballPositions[NUM_HOLES] = {
+    {1, 1}, {0, 0}, {0, 0}, {0, 0}, {0, 8}, {9, 9}, {0, 9}, {10, 5}, {0, 9}
 };
 
-// **Predefined Courses**
+// Predefined Hole Positions
+Hole holes[NUM_HOLES] = {
+    {18, 8}, {19, 9}, {19, 0}, {19, 9}, {19, 1}, {9, 1}, {18, 3}, {0, 0}, {19, 9}
+};
+
+// Predefined Courses
 char courses[NUM_HOLES][HEIGHT][WIDTH + 1] = {
-    {
-        "---o----------------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "-----------------X--",
-        "--------------------",
-    },
+    {"--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------"},
 
-    {
-        "--o----------#####--",
-        "--------------------",
-        "-----#####----------",
-        "--------------------",
-        "----------#####-----",
-        "----------------X---",
-        "#####---------------",
-        "-----------#####----",
-        "--------------------",
-        "-#####--------------",
-    },
+    {"------------#####--",
+     "--------------------",
+     "-----#####----------",
+     "--------------------",
+     "----------#####-----",
+     "--------------------",
+     "#####---------------",
+     "-----------#####----",
+     "--------------------",
+     "-#####--------------"},
 
-    {
-        "--o-----------------",
-        "---------------&----",
-        "--------------------",
-        "--------------------",
-        "####################",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "----&---------------",
-        "----------------X---",
-    },
+    {"----------#---------",
+     "----------#---------",
+     "----------#---------",
+     "----------#---------",
+     "----------#---------",
+     "----------#---------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------"},
 
-    {
-        "-----#---X----------",
-        "-----#----------&---",
-        "-----#--------------",
-        "--------------------",
-        "----############----",
-        "--------------------",
-        "--------------------",
-        "--------------#-----",
-        "-----&--------#-----",
-        "----------o---#-----",
-    },
+    {"-----#--------------",
+     "-----#--------------",
+     "-----#--------------",
+     "--------------------",
+     "----############----",
+     "--------------------",
+     "--------------------",
+     "--------------#-----",
+     "--------------#-----",
+     "--------------#-----"},
 
-    {
-        "-------------------#",
-        "--------&---------#-",
-        "-------#---------#--",
-        "------#---------#-X-",
-        "-----#---------#----",
-        "----#---------#-----",
-        "-o-#---------#------",
-        "--#---------#-------",
-        "-#---------&--------",
-        "#-------------------",
-    },
+    {"-------------------#",
+     "--------#---------#-",
+     "-------#---------#--",
+     "------#---------#---",
+     "-----#---------#----",
+     "----#---------#-----",
+     "---#---------#------",
+     "--#---------#-------",
+     "-#---------#--------",
+     "#-------------------"},
 
-    {
-        "--#########---------",
-        "--#---o---#---------",
-        "--#-------#---------",
-        "--#-------#---------",
-        "--#-------#---------",
-        "--#-------#---------",
-        "--#-------#---------",
-        "--#-------##########",
-        "--#--------------X-#",
-        "--##################",
-    },
+    {"--#########---------",
+     "--#-------#---------",
+     "--#-------#---------",
+     "--#-------#---------",
+     "--#-------#---------",
+     "--#-------#---------",
+     "--#-------#---------",
+     "--#-------##########",
+     "--#----------------#",
+     "--##################"},
 
-    {
-        "------######-----&--",
-        "&---------X#--------",
-        "------######--------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-        "-----------------o--",
-        "--------------------",
-    },
+    {"------######--------",
+     "------#-------------",
+     "------######--------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------",
+     "--------------------"},
 
-    {
-        "--------------------",
-        "-----#####----------",
-        "-----#---#-------&--",
-        "-----#---#----------",
-        "-----#---#----------",
-        "-----#---#----------",
-        "-----#-&-#----------",
-        "--------------------",
-        "--------------------",
-        "--------------------",
-    },
+    {"--------------------",
+     "-----#####----------",
+     "-----#---#----------",
+     "-----#---#----------",
+     "-----#---#----------",
+     "-----#---#----------",
+     "-----#---#----------",
+     "--------------------",
+     "--------------------",
+     "--------------------"},
 
-    {
-        "--------------------",
-        "------#####---------",
-        "------#---#---------",
-        "------#---#---------",
-        "------#---#---------",
-        "------#---#---------",
-        "------#-&-#---------",
-        "-----#####----------",
-        "--------------------",
-        "--------------&-----",
-    }
+    {"#---#---#---#---#---",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
+     "#-#---#---#---#---#-"}
 };
 
-// **Ball positions**
-Ball ballPositions[NUM_HOLES] = {{1, 1}, {2, 2}, {3, 3}, {2, 1}, {3, 3}, {2, 1}, {1, 2}, {2, 2}, {3, 3}};
-Hole holes[NUM_HOLES] = {{18, 8}, {17, 5}, {15, 5}, {10, 5}, {9, 4}, {14, 3}, {18, 2}, {15, 5}, {14, 8}};
-Portal portals[NUM_HOLES] = {
-    {0, 0, 0, 0, false},
-    {0, 0, 0, 0, false},
-    {6, 4, 6, 8, true},
-    {6, 4, 8, 6, true},
-    {5, 3, 7, 7, true},
-    {4, 1, 10, 7, true},
-    {4, 2, 8, 6, true},
-    {3, 2, 8, 5, true},
-    {3, 6, 7, 8, true}
-};
-
-// **Display Course**
 void displayCourse(Ball ball, int holeNum) {
     for (int y = 0; y < HEIGHT; y++) {
         for (int x = 0; x < WIDTH; x++) {
@@ -175,7 +145,6 @@ void displayCourse(Ball ball, int holeNum) {
     }
 }
 
-// **Move Ball**
 void moveBall(Ball &ball, int holeNum, char direction, int force) {
     int dx = 0, dy = 0;
     switch (direction) {
@@ -183,7 +152,7 @@ void moveBall(Ball &ball, int holeNum, char direction, int force) {
         case 'd': dy = force; break;
         case 'l': dx = -force; break;
         case 'r': dx = force; break;
-        default: return; // Invalid direction, do nothing
+        default: return;
     }
 
     int newX = ball.x + dx;
@@ -196,85 +165,44 @@ void moveBall(Ball &ball, int holeNum, char direction, int force) {
 
     ball.x = newX;
     ball.y = newY;
-
-    if (portals[holeNum].active) {
-        if (ball.x == portals[holeNum].x1 && ball.y == portals[holeNum].y1) {
-            ball.x = portals[holeNum].x2;
-            ball.y = portals[holeNum].y2;
-            cout << "You were transported through the portal!\n";
-        } else if (ball.x == portals[holeNum].x2 && ball.y == portals[holeNum].y2) {
-            ball.x = portals[holeNum].x1;
-            ball.y = portals[holeNum].y1;
-            cout << "You were transported through the portal!\n";
-        }
-    }
 }
 
-// **Get Valid User Input**
 void getValidInput(char &direction, int &force) {
     while (true) {
         cout << "Enter direction (u/d/l/r): ";
         cin >> direction;
-        
-        if (direction == 'u' || direction == 'd' || direction == 'l' || direction == 'r')
-            break;
-
+        if (direction == 'u' || direction == 'd' || direction == 'l' || direction == 'r') break;
         cout << "Invalid direction! Please enter 'u', 'd', 'l', or 'r'.\n";
-        cin.clear(); // Clear error flag
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
     }
 
     while (true) {
         cout << "Enter force (1-10): ";
         cin >> force;
-
-        if (cin.fail() || force < 1 || force > 10) {
-            cout << "Invalid force! Enter a number between 1 and 10.\n";
-            cin.clear(); // Clear error flag
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
-        } else {
-            break;
-        }
+        if (force >= 1 && force <= 10) break;
+        cout << "Invalid force! Enter a number between 1 and 10.\n";
     }
 }
 
-// **Main Game Loop**
 int main() {
-    cout << "Welcome to Console Mini Golf! Get the ball (o) into the hole (X).\n";
-    cout << "Use 'u' (up), 'd' (down), 'l' (left), 'r' (right) to move. Enter a force 1-10 to determine how far the ball travels.\n";
-
+    int totalScore = 0;
     for (int i = 0; i < NUM_HOLES; i++) {
         Ball ball = ballPositions[i];
+        int strokes = 0;
         cout << "\nStarting Hole " << i + 1 << " (Par 4)\n";
         displayCourse(ball, i);
 
-        // Hole 1 message (no obstacles or portals)
-        if (i == 0) {
-            cout << "\nGet the ball into the hole.\n";
-        }
-        // Hole 2 message (introduce obstacles)
-        if (i == 1) {
-            cout << "\nAvoid obstacles (#) on the course to get to the hole.\n";
-        }
-        // Hole 3 message (introduce portals)
-        if (i == 2) {
-            cout << "\nPortals (&) are now active. Use portals to avoid obstacles on the way to the hole.\n";
-        }
-        // Hole 4 message (introduce more obstacles and portals)
-        if (i == 3) {
-            cout << "\nAll elements (obstacles, portals) are now active! Good luck!\n";
-        }
-        // Game loop to move ball
         while (ball.x != holes[i].x || ball.y != holes[i].y) {
             char direction;
             int force;
             getValidInput(direction, force);
             moveBall(ball, i, direction, force);
+            strokes++;
             displayCourse(ball, i);
         }
 
-        cout << "Congratulations! You completed Hole " << i + 1 << ".\n";
+        cout << "Completed Hole " << i + 1 << " in " << strokes << " strokes!\n";
+        totalScore += strokes;
     }
-
+    cout << "\nCongratulations! You have completed the game with a final score of " << totalScore << "!\n";
     return 0;
 }
