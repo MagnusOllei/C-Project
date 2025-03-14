@@ -17,17 +17,18 @@ struct Ball {
 
 struct Hole {
     int x, y;
-    int par = 4;
+    int par;
 };
 
 // Predefined Ball Positions
 Ball ballPositions[NUM_HOLES] = {
-    {1, 1}, {0, 0}, {0, 0}, {0, 0}, {0, 8}, {9, 9}, {0, 9}, {10, 5}, {0, 9}
+    {1, 1}, {0, 0}, {0, 0}, {0, 0}, {0, 8}, {17, 8}, {0, 9}, {7, 2}, {1, 9}
 };
 
-// Predefined Hole Positions
+// Predefined Hole Positions & Pars
 Hole holes[NUM_HOLES] = {
-    {18, 8}, {19, 9}, {19, 0}, {19, 9}, {19, 1}, {9, 1}, {18, 3}, {0, 0}, {19, 9}
+    {18, 8, 4}, {19, 9, 6}, {19, 0, 6}, {19, 9, 5}, {19, 1, 7}, 
+    {6, 1, 4}, {7, 1, 6}, {18, 1, 5}, {19, 9, 24}
 };
 
 // Predefined Courses
@@ -128,6 +129,7 @@ char courses[NUM_HOLES][HEIGHT][WIDTH + 1] = {
      "#-#-#-#-#-#-#-#-#-#-",
      "#-#-#-#-#-#-#-#-#-#-",
      "#-#-#-#-#-#-#-#-#-#-",
+     "#-#-#-#-#-#-#-#-#-#-",
      "#-#---#---#---#---#-"}
 };
 
@@ -183,13 +185,37 @@ void getValidInput(char &direction, int &force) {
     }
 }
 
+string getScoreTerm(int strokes, int par) {
+    int diff = strokes - par;
+    if (diff <= -5) return "Phoenix!";
+    if (diff == -4) return "Ostrich!";
+    if (diff == -3) return "Albatross!";
+    if (diff == -2) return "Eagle!";
+    if (diff == -1) return "Birdie!";
+    if (diff == 0) return "Par!";
+    if (diff == 1) return "Bogey!";
+    if (diff == 2) return "Double Bogey!";
+    if (diff == 3) return "Triple Bogey!";
+    return to_string(diff) + " Over Par!";
+}
+
 int main() {
+    // Intro message
+    cout << "Welcome to Console Mini Golf!\n";
+    cout << "Enter 'u' for up, 'd' for down, 'l' for left, and 'r' for right.\n";
+    cout << "You can adjust the force (1-10) to control how far the ball moves.\n";
+
     int totalScore = 0;
     for (int i = 0; i < NUM_HOLES; i++) {
         Ball ball = ballPositions[i];
         int strokes = 0;
-        cout << "\nStarting Hole " << i + 1 << " (Par 4)\n";
+        cout << "\nStarting Hole " << i + 1 << " (Par " << holes[i].par << ")\n";
         displayCourse(ball, i);
+
+        // Inform about obstacles after Hole 1
+        if (i == 1) {
+            cout << "Avoid hitting obstacles (#) on the way to the hole!\n";
+        }
 
         while (ball.x != holes[i].x || ball.y != holes[i].y) {
             char direction;
@@ -200,9 +226,20 @@ int main() {
             displayCourse(ball, i);
         }
 
-        cout << "Completed Hole " << i + 1 << " in " << strokes << " strokes!\n";
+        cout << "Completed Hole " << i + 1 << " in " << strokes << " strokes! " 
+             << getScoreTerm(strokes, holes[i].par) << "\n";
         totalScore += strokes;
     }
-    cout << "\nCongratulations! You have completed the game with a final score of " << totalScore << "!\n";
+
+    // Final congratulations message
+    int totalPar = 0;
+    for (int i = 0; i < NUM_HOLES; i++) {
+        totalPar += holes[i].par;
+    }
+    int underPar = totalPar - totalScore;
+    cout << "\nCongratulations! You've completed the game!\n";
+    cout << "Your total score: " << totalScore << " strokes.\n";
+    cout << "You are " << (underPar >= 0 ? underPar : -underPar) << (underPar >= 0 ? " under par!" : " over par!") << endl;
+
     return 0;
 }
