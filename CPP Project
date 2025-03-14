@@ -44,7 +44,7 @@ char courses[NUM_HOLES][HEIGHT][WIDTH + 1] = {
      "--------------------",
      "--------------------"},
 
-    {"------------#####--",
+    {"-------------#####--",
      "--------------------",
      "-----#####----------",
      "--------------------",
@@ -131,6 +131,7 @@ char courses[NUM_HOLES][HEIGHT][WIDTH + 1] = {
      "#-#-#-#-#-#-#-#-#-#-",
      "#-#-#-#-#-#-#-#-#-#-",
      "#-#---#---#---#---#-"}
+
 };
 
 void displayCourse(Ball ball, int holeNum) {
@@ -147,26 +148,44 @@ void displayCourse(Ball ball, int holeNum) {
     }
 }
 
-void moveBall(Ball &ball, int holeNum, char direction, int force) {
+bool isValidMove(Ball ball, int dx, int dy, int force, int holeNum) {
+    for (int i = 1; i <= force; i++) {
+        int newX = ball.x + dx * i;
+        int newY = ball.y + dy * i;
+
+        // Check if the new position is out of bounds
+        if (newX < 0 || newX >= WIDTH || newY < 0 || newY >= HEIGHT) {
+            return false;
+        }
+
+        // Check if there's an obstacle at the new position
+        if (courses[holeNum][newY][newX] == OBSTACLE) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void moveBall(Ball &ball, int holeNum, char direction, int force, int &strokes) {
     int dx = 0, dy = 0;
     switch (direction) {
-        case 'u': dy = -force; break;
-        case 'd': dy = force; break;
-        case 'l': dx = -force; break;
-        case 'r': dx = force; break;
+        case 'u': dy = -1; break;
+        case 'd': dy = 1; break;
+        case 'l': dx = -1; break;
+        case 'r': dx = 1; break;
         default: return;
     }
 
-    int newX = ball.x + dx;
-    int newY = ball.y + dy;
+    // Every attempt to move the ball increases the stroke count
+    strokes++;
 
-    if (newX < 0 || newX >= WIDTH || newY < 0 || newY >= HEIGHT || courses[holeNum][newY][newX] == OBSTACLE) {
-        cout << "Hit an obstacle or went out of bounds! Try again.\n";
-        return;
+    if (isValidMove(ball, dx, dy, force, holeNum)) {
+        ball.x += dx * force;
+        ball.y += dy * force;
+    } else {
+        cout << "Invalid move: Out of bounds or hit an obstacle! Try again.\n";
     }
-
-    ball.x = newX;
-    ball.y = newY;
 }
 
 void getValidInput(char &direction, int &force) {
@@ -221,8 +240,7 @@ int main() {
             char direction;
             int force;
             getValidInput(direction, force);
-            moveBall(ball, i, direction, force);
-            strokes++;
+            moveBall(ball, i, direction, force, strokes);
             displayCourse(ball, i);
         }
 
